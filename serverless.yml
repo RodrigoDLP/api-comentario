@@ -11,6 +11,7 @@ provider:
     role: arn:aws:iam::415976204250:role/LabRole	
   environment:
     TABLE_NAME: ${sls:stage}-t_comentarios
+    BUCKET_NAME: ${sls:stage}-api-comentario-rdelapuente
 
 functions:
   crear:
@@ -24,6 +25,28 @@ functions:
 
 resources:
   Resources:
+    BucketIngesta:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.BUCKET_NAME}
+        AccessControl: PublicRead
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+    BucketIngestaPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref BucketIngesta
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: "s3:GetObject"
+              Resource: !Sub "arn:aws:s3:::${BucketIngesta}/*"
+
     TablaComentarios:
       Type: AWS::DynamoDB::Table
       Properties:
