@@ -22,7 +22,7 @@ def lambda_handler(event, context):
     s3 = boto3.client('s3')
     response = s3.put_object(
         Bucket=nombre_bucket,
-        Key=uuidv1,
+        Key=f"{uuidv1}.json",
         Body=json.dumps(comentario),
         ContentType="application/json"
     )
